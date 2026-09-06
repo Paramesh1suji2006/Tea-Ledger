@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tea Ledger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <span class="leaf-icon">🍃</span>
+        <h1>Tea Ledger</h1>
+      </div>
+      <span id="sync-status" class="sync-badge">Connecting…</span>
+    </div>
+  </header>
+
+  <!-- TAB NAV -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="new-entry">New Entry</button>
+    <button class="tab-btn" data-tab="customers">Customers</button>
+  </nav>
+
+  <main>
+
+    <!-- ── TAB 1: NEW ENTRY ── -->
+    <section id="new-entry" class="tab-panel active">
+      <div class="card form-card">
+        <h2 class="section-title">Record Collection</h2>
+
+        <!-- Name with autocomplete -->
+        <div class="form-group autocomplete-wrap">
+          <label for="customerName">Customer Name</label>
+          <input type="text" id="customerName" placeholder="Type name…" autocomplete="off" />
+          <div id="nameSuggestions" class="suggestions hidden"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="customerPhone">Phone Number</label>
+          <input type="tel" id="customerPhone" placeholder="e.g. 9876543210" />
+        </div>
+
+        <!-- Multiple weights -->
+        <div class="form-group">
+          <label>Weights (kg)</label>
+          <div id="weightList" class="weight-list"></div>
+          <div class="weight-input-row">
+            <input type="number" id="weightInput" placeholder="Enter weight" step="0.01" min="0" />
+            <button id="addWeightBtn" class="btn-add-weight">+ Add</button>
+          </div>
+          <div id="weightTotal" class="weight-total hidden">Total: <span id="totalVal">0.00</span> kg</div>
+        </div>
+
+        <!-- Deductions -->
+        <div class="form-group">
+          <label>Deductions (kg)</label>
+          <div class="deduction-row">
+            <div class="deduction-field">
+              <label for="waterDeduct">💧 Water</label>
+              <input type="number" id="waterDeduct" placeholder="0.00" step="0.01" min="0" />
+            </div>
+            <div class="deduction-field">
+              <label for="tareDeduct">⚖️ Tare</label>
+              <input type="number" id="tareDeduct" placeholder="0.00" step="0.01" min="0" />
+            </div>
+          </div>
+          <div id="netWeightDisplay" class="net-weight-display hidden">
+            Net Weight: <span id="netVal">0.00</span> kg
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="grade">Tea Grade</label>
+          <select id="grade">
+            <option value="">Select grade</option>
+            <option value="Grade A">Grade A</option>
+            <option value="Grade B">Grade B</option>
+            <option value="Grade C">Grade C</option>
+            <option value="Premium">Premium</option>
+            <option value="Standard">Standard</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="entryDate">Date</label>
+          <input type="date" id="entryDate" />
+        </div>
+
+        <button id="saveBtn" class="btn btn-primary">Save Entry</button>
+      </div>
+
+      <!-- Receipt stub shown after save -->
+      <div id="receipt" class="receipt hidden">
+        <div class="receipt-header">Entry Saved ✓</div>
+        <div class="receipt-body">
+          <div class="receipt-row">
+            <span class="receipt-label">Customer</span>
+            <span id="r-name" class="receipt-value"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Weights</span>
+            <span id="r-weights" class="receipt-value"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Gross Weight</span>
+            <span id="r-weight" class="receipt-value weight-num"></span>
+          </div>
+          <div class="receipt-row" id="r-water-row">
+            <span class="receipt-label">💧 Water</span>
+            <span id="r-water" class="receipt-value deduct-num">− 0.00 kg</span>
+          </div>
+          <div class="receipt-row" id="r-tare-row">
+            <span class="receipt-label">⚖️ Tare</span>
+            <span id="r-tare" class="receipt-value deduct-num">− 0.00 kg</span>
+          </div>
+          <div class="receipt-row net-row">
+            <span class="receipt-label">✅ Net Weight</span>
+            <span id="r-net" class="receipt-value weight-num net-num"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Grade</span>
+            <span id="r-grade" class="receipt-value"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Date</span>
+            <span id="r-date" class="receipt-value"></span>
+          </div>
+        </div>
+        <button id="smsBtn" class="btn btn-sms">📱 Send SMS to Customer</button>
+      </div>
+    </section>
+
+    <!-- ── TAB 2: CUSTOMERS ── -->
+    <section id="customers" class="tab-panel">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search by name or phone…" />
+      </div>
+
+      <div id="customerList" class="customer-list">
+        <p class="empty-msg">Loading customers…</p>
+      </div>
+
+      <!-- Customer detail panel -->
+      <div id="customerDetail" class="customer-detail hidden">
+        <button id="backBtn" class="back-btn">← Back</button>
+        <div class="detail-header">
+          <div id="detail-name" class="detail-name"></div>
+          <div id="detail-phone" class="detail-phone"></div>
+        </div>
+        <div id="detail-summary" class="detail-summary"></div>
+        <div id="detail-entries" class="detail-entries"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
